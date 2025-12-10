@@ -199,3 +199,7 @@ taskapp/
 └── tests/
     └── integration/   # Integration tests
 ```
+
+I Added support for task due dates and an optional “Sync to Google Calendar” toggle.
+Created a new Supabase migration to store due dates and a task_calendar_events table.
+Implemented a syncTaskToCalendar Edge Function that can take a task_id, read task data from the DB, and create a matching event in Google Calendar (behind the scenes via server-side secrets).
