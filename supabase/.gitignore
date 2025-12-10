@@ -2,3 +2,7 @@
 .branches
 .temp
 .env
+.env.local
+supabase/.env
+supabase/.env.local
+supabase/.secrets
