@@ -51,10 +51,14 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
           rows={3}
         />
       </div>
-      <Button type="submit" disabled={isSubmitting}>
+      <Button 
+        type="submit" 
+        disabled={isSubmitting}
+        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
+      >
         {isSubmitting ? "Creating..." : "Create Task"}
       </Button>
-      {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+      {error && <div className="text-red-500 text-sm mt-2 font-medium">{error}</div>}
     </form>
   );
 }

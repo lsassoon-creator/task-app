@@ -27,11 +27,14 @@ const LoginForm = () => {
   return (
     <section aria-label={isSignUpMode ? "Sign Up Form" : "Login Form"}>
       <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">
+        <h1 className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 bg-clip-text text-transparent">
           {isSignUpMode ? "Create Account" : "Welcome Back"}
         </h1>
         <div className="space-y-4">
-          <Button className="w-full" onClick={handleGoogleLogin}>
+          <Button 
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full" 
+            onClick={handleGoogleLogin}
+          >
             <LogIn className="mr-2 h-4 w-4" />
             Login with Google
           </Button>
@@ -85,14 +88,21 @@ const LoginForm = () => {
             {error && (
               <div className="text-gray-700 text-sm text-center">{error}</div>
             )}
-            <Button type="submit" className="w-full">
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
+            >
               <LogIn className="mr-2 h-4 w-4" />
               {isSignUpMode ? "Sign Up" : "Login"}
             </Button>
           </form>
-          <p className="text-center text-sm">
+          <p className="text-center text-sm text-muted-foreground">
             {isSignUpMode ? "Already have an account?" : "New account?"}{" "}
-            <Link href="#" className="underline" onClick={toggleMode}>
+            <Link 
+              href="#" 
+              className="underline font-semibold text-purple-600 hover:text-pink-600 transition-colors duration-300" 
+              onClick={toggleMode}
+            >
               {isSignUpMode ? "Login" : "Sign up"}
             </Link>
           </p>

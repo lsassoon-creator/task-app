@@ -123,7 +123,7 @@ function TaskForm() {
   const renderImageDisplay = () => {
     return (
       <div className="space-y-2">
-        <div className="relative w-40 h-40 rounded-lg overflow-hidden">
+        <div className="relative w-40 h-40 rounded-xl overflow-hidden shadow-lg border-2 border-purple-200">
           <Image
             src={`${
               process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -152,20 +152,22 @@ function TaskForm() {
       <div
         {...getRootProps()}
         className={cn(
-          "border-2 border-dashed rounded-md p-6 text-center cursor-pointer",
-          isDragActive ? "border-blue-500" : "border-gray-300"
+          "border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300",
+          isDragActive 
+            ? "border-purple-500 bg-purple-50/50 scale-105" 
+            : "border-purple-200 hover:border-purple-400 hover:bg-purple-50/30"
         )}
       >
         <input {...getInputProps()} />
-        <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+        <Upload className="w-10 h-10 mx-auto mb-3 text-purple-400" />
         {isDragActive ? (
-          <p className="text-sm text-blue-500">Drop the image here...</p>
+          <p className="text-sm font-semibold text-purple-600">Drop the image here...</p>
         ) : (
           <div className="space-y-1">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm font-medium text-purple-600">
               Drag and drop an image here, or click to select
             </p>
-            <p className="text-xs text-gray-400">Supports: JPEG, PNG</p>
+            <p className="text-xs text-muted-foreground">Supports: JPEG, PNG</p>
           </div>
         )}
       </div>
@@ -185,8 +187,10 @@ function TaskForm() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Task Details</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 bg-clip-text text-transparent">
+        Task Details
+      </h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid w-full items-center gap-1.5">
           <Label>Title</Label>
           <Input
@@ -261,14 +265,17 @@ function TaskForm() {
             {task.image_url ? renderImageDisplay() : renderImageUpload()}
           </div>
         </div>
-        <div className="flex space-x-2 w-full pt-4">
+        <div className="flex space-x-3 w-full pt-6">
           <Link href="/dashboard" className="flex-1">
-            <Button type="button" variant="outline" className="w-full">
+            <Button type="button" variant="outline" className="w-full rounded-full border-2">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
           </Link>
-          <Button type="submit" className="flex-1">
+          <Button 
+            type="submit" 
+            className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
+          >
             <Save className="mr-2 h-4 w-4" />
             Save Changes
           </Button>

@@ -1,16 +1,19 @@
 const Footer = () => {
   return (
-    <footer className="bg-transparent text-white py-4">
+    <footer className="bg-transparent text-white/80 py-6 relative z-20">
       <div className="container mx-auto px-4 text-center text-sm">
-        Task App by Pixegami 🛠️ View on{" "}
-        <a
-          href="https://github.com/pixegami/task-app-project"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline"
-        >
-          GitHub
-        </a>
+        <p className="flex items-center justify-center gap-2">
+          <span>Task App by Pixegami</span>
+          <span className="text-2xl">✨</span>
+          <a
+            href="https://github.com/pixegami/task-app-project"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-cyan-200 transition-colors duration-300"
+          >
+            GitHub
+          </a>
+        </p>
       </div>
     </footer>
   );

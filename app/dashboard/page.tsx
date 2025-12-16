@@ -29,19 +29,23 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Your Tasks</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 bg-clip-text text-transparent">
+          Your Tasks
+        </h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-6">
               <PlusCircle className="mr-2 h-4 w-4" />
               Create Task
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="rounded-2xl">
             <DialogHeader>
-              <DialogTitle>Create New Task</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-2xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Create New Task
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground">
                 Enter the details for your new task below.
               </DialogDescription>
             </DialogHeader>
@@ -50,7 +54,7 @@ export default function Dashboard() {
         </Dialog>
       </div>
       {tasks.length > 0 ? (
-        <div className="border rounded-md">
+        <div className="border-2 border-purple-200/50 rounded-2xl overflow-hidden shadow-lg bg-white/50 backdrop-blur-sm">
           <TaskList
             tasks={tasks}
             onDelete={deleteTask}
@@ -58,9 +62,9 @@ export default function Dashboard() {
           />
         </div>
       ) : (
-        <div className="border rounded-md p-8 text-center">
-          <ClipboardList className="mx-auto h-8 w-8 text-gray-400 mb-4" />
-          <p className="text-gray-500">Create a Task to get started.</p>
+        <div className="border-2 border-purple-200/50 rounded-2xl p-12 text-center bg-gradient-to-br from-purple-50/50 to-pink-50/50 backdrop-blur-sm">
+          <ClipboardList className="mx-auto h-12 w-12 text-purple-400 mb-4" />
+          <p className="text-purple-600 font-medium text-lg">Create a Task to get started.</p>
         </div>
       )}
     </div>
