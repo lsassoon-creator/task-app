@@ -22,18 +22,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${poppins.variable} ${poppins.className} bg-gradient-to-br from-purple-500 via-pink-500 to-cyan-500 min-h-screen`}
+        className={`${poppins.variable} ${poppins.className} bg-gradient-to-br from-gray-900 via-black to-gray-800 min-h-screen`}
       >
         <div className="flex flex-col min-h-screen relative overflow-hidden">
-          {/* Animated background elements */}
+          {/* Subtle background accent */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+            <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-500/5 rounded-full filter blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-400/5 rounded-full filter blur-3xl"></div>
           </div>
           <Header />
           <main className="flex-grow container mx-auto px-4 py-8 relative z-10">
-            <Card className="w-full max-w-2xl mx-auto backdrop-blur-xl bg-white/90 shadow-2xl border-0 rounded-3xl">
+            <Card className="w-full max-w-2xl mx-auto backdrop-blur-xl bg-white/95 shadow-2xl border border-gray-200 rounded-2xl">
               <CardContent className="p-8">
                 <RouteGuard>{children}</RouteGuard>
               </CardContent>

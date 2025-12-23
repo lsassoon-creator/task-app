@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,10 +38,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/hooks/use-toast";
 import Image from "next/image";
 import { useDropzone } from "react-dropzone";
+import { createBrowserClient } from '@supabase/ssr';
 
 function TaskForm() {
+  console.log("🚀 TaskForm component rendered");
   const params = useSearchParams();
   const taskId = params.get("id")!;
+  console.log("Task ID from params:", taskId);
   const {
     task,
     date,
@@ -56,36 +59,74 @@ function TaskForm() {
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
 
+  // Create supabase client once for URL generation
+  const supabase = useMemo(() => {
+    console.log("🔧 Creating Supabase client in TaskForm component");
+    console.log("Environment check:", {
+      hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    });
+    return createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+  }, []);
+
   const handleImageUpload = async (acceptedFiles: File[]) => {
+    console.log("=== HANDLE IMAGE UPLOAD START ===");
+    console.log("Accepted files:", acceptedFiles);
     const file = acceptedFiles[0];
-    if (!file) return;
+    if (!file) {
+      console.log("❌ No file provided");
+      return;
+    }
 
     try {
+      console.log("🔄 Setting uploading state to true");
       setUploading(true);
+      console.log("📤 Calling uploadImage function...");
       await uploadImage(file);
+      console.log("✅ Upload completed successfully in handleImageUpload");
       toast({
         title: "✅ Image Uploaded",
         description: "Image uploaded successfully",
       });
     } catch (error: any) {
+      console.error("❌ Error in handleImageUpload:", error);
+      console.error("Error type:", typeof error);
+      console.error("Error keys:", Object.keys(error || {}));
+      console.error("Full error object:", JSON.stringify(error, null, 2));
+      console.error("Error message:", error?.message);
+      console.error("Error statusCode:", error?.statusCode);
+      console.error("Error error:", error?.error);
+      console.error("Error name:", error?.name);
+      console.error("Error stack:", error?.stack);
       toast({
         title: "❌ Upload Failed",
-        description: error.message || "Failed to upload image",
+        description: error?.message || error?.error || JSON.stringify(error) || "Failed to upload image",
         variant: "destructive",
       });
     } finally {
+      console.log("🔄 Setting uploading state to false");
       setUploading(false);
+      console.log("=== HANDLE IMAGE UPLOAD END ===");
     }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: handleImageUpload,
+    onDrop: (files) => {
+      console.log("🎯 Dropzone onDrop triggered with files:", files);
+      handleImageUpload(files);
+    },
     accept: {
       "image/jpeg": [],
       "image/png": [],
     },
     maxFiles: 1,
   });
+  
+  console.log("Dropzone configured, getRootProps:", typeof getRootProps);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,24 +162,42 @@ function TaskForm() {
   };
 
   const renderImageDisplay = () => {
+    console.log("=== RENDER IMAGE DISPLAY ===");
+    console.log("Task image_url:", task!.image_url);
+    console.log("Supabase client:", supabase ? "exists" : "missing");
+    
+    // Use Supabase's getPublicUrl method for proper URL construction
+    const { data: urlData } = supabase.storage
+      .from("task-attachments")
+      .getPublicUrl(task!.image_url);
+    
+    console.log("URL data from getPublicUrl:", urlData);
+    console.log("Final image URL:", urlData.publicUrl);
+    console.log("=== RENDER IMAGE DISPLAY END ===");
+    
     return (
       <div className="space-y-3">
-        <div className="relative w-full aspect-square max-w-full rounded-xl overflow-hidden shadow-lg border-2 border-purple-200 bg-purple-50">
+        <div className="relative w-full aspect-square max-w-full rounded-xl overflow-hidden shadow-lg border-2 border-yellow-200 bg-yellow-50">
           <Image
-            src={`${
-              process.env.NEXT_PUBLIC_SUPABASE_URL
-            }/storage/v1/object/public/task-attachments/${task!.image_url}`}
+            src={urlData.publicUrl}
             alt="Task attachment"
             fill
             sizes="(max-width: 768px) 100vw, 400px"
             className="object-cover"
+            onError={(e) => {
+              console.error("❌ Image load error:", e);
+              console.error("Failed URL:", urlData.publicUrl);
+            }}
+            onLoad={() => {
+              console.log("✅ Image loaded successfully:", urlData.publicUrl);
+            }}
           />
         </div>
         <Button
           type="button"
           variant="outline"
           onClick={handleRemoveImage}
-          className="w-full rounded-full border-2 hover:bg-pink-50 hover:border-pink-300"
+          className="w-full rounded-lg border-2 border-gray-300 hover:bg-gray-100 hover:border-gray-400"
         >
           <Trash2 className="mr-2 h-4 w-4" />
           Remove Image
@@ -154,17 +213,17 @@ function TaskForm() {
         className={cn(
           "border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300",
           isDragActive 
-            ? "border-purple-500 bg-purple-50/50 scale-105" 
-            : "border-purple-200 hover:border-purple-400 hover:bg-purple-50/30"
+            ? "border-yellow-500 bg-yellow-50/50 scale-105" 
+            : "border-yellow-200 hover:border-yellow-400 hover:bg-yellow-50/30"
         )}
       >
         <input {...getInputProps()} />
-        <Upload className="w-10 h-10 mx-auto mb-3 text-purple-400" />
+        <Upload className="w-10 h-10 mx-auto mb-3 text-yellow-500" />
         {isDragActive ? (
-          <p className="text-sm font-semibold text-purple-600">Drop the image here...</p>
+          <p className="text-sm font-semibold text-yellow-700">Drop the image here...</p>
         ) : (
           <div className="space-y-1">
-            <p className="text-sm font-medium text-purple-600">
+            <p className="text-sm font-medium text-yellow-700">
               Drag and drop an image here, or click to select
             </p>
             <p className="text-xs text-muted-foreground">Supports: JPEG, PNG</p>
@@ -187,29 +246,16 @@ function TaskForm() {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 bg-clip-text text-transparent">
+      <h1 className="text-4xl font-bold mb-8 text-foreground">
         Task Details
       </h1>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Side - Large Description */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="grid w-full items-start gap-2">
-              <Label className="text-lg font-semibold text-purple-700">Description</Label>
-              <Textarea
-                value={task.description || ""}
-                onChange={(e) => updateTask({ description: e.target.value })}
-                className="min-h-[400px] text-lg leading-relaxed resize-none"
-                placeholder="Write your task description here..."
-              />
-            </div>
-          </div>
-
-          {/* Right Side - Other Details */}
+          {/* Left Side - Other Details */}
           <div className="lg:col-span-1 space-y-6">
             {/* Title */}
             <div className="grid w-full items-center gap-2">
-              <Label className="text-base font-semibold text-purple-700">Title</Label>
+              <Label className="text-base font-semibold text-foreground">Title</Label>
               <Input
                 value={task.title || ""}
                 onChange={(e) => updateTask({ title: e.target.value })}
@@ -219,7 +265,7 @@ function TaskForm() {
             </div>
 
             {/* Completed Checkbox */}
-            <div className="flex items-center space-x-3 p-4 rounded-xl border-2 border-purple-200/50 bg-purple-50/30">
+            <div className="flex items-center space-x-3 p-4 rounded-xl border-2 border-yellow-200/50 bg-yellow-50/30">
               <Checkbox
                 checked={task.completed || false}
                 onCheckedChange={(checked) =>
@@ -234,7 +280,7 @@ function TaskForm() {
 
             {/* Label */}
             <div className="grid w-full items-center gap-2">
-              <Label className="text-base font-semibold text-purple-700">Label</Label>
+              <Label className="text-base font-semibold text-foreground">Label</Label>
               <Select
                 value={task.label || ""}
                 onValueChange={(value) =>
@@ -256,7 +302,7 @@ function TaskForm() {
 
             {/* Due Date */}
             <div className="grid w-full items-center gap-2">
-              <Label className="text-base font-semibold text-purple-700">Due Date</Label>
+              <Label className="text-base font-semibold text-foreground">Due Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -283,7 +329,7 @@ function TaskForm() {
 
             {/* Attach Image */}
             <div className="grid w-full items-center gap-2">
-              <Label className="text-base font-semibold text-purple-700">Attach Image</Label>
+              <Label className="text-base font-semibold text-foreground">Attach Image</Label>
               <div className="space-y-2">
                 {task.image_url ? renderImageDisplay() : renderImageUpload()}
               </div>
@@ -293,7 +339,7 @@ function TaskForm() {
             <div className="flex flex-col space-y-3 pt-4">
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full h-12 text-base font-semibold"
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-black shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg h-12 text-base font-semibold"
               >
                 <Save className="mr-2 h-5 w-5" />
                 Save Changes
@@ -302,12 +348,25 @@ function TaskForm() {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  className="w-full rounded-full border-2 h-12 text-base font-semibold"
+                  className="w-full rounded-lg border-2 border-gray-300 hover:border-gray-400 h-12 text-base font-semibold"
                 >
                   <ArrowLeft className="mr-2 h-5 w-5" />
                   Back to Dashboard
                 </Button>
               </Link>
+            </div>
+          </div>
+
+          {/* Right Side - Large Description */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="grid w-full items-start gap-2">
+              <Label className="text-lg font-semibold text-foreground">Description</Label>
+              <Textarea
+                value={task.description || ""}
+                onChange={(e) => updateTask({ description: e.target.value })}
+                className="min-h-[400px] text-lg leading-relaxed resize-none"
+                placeholder="Write your task description here..."
+              />
             </div>
           </div>
         </div>

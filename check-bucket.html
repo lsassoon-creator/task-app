@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Supabase Bucket</title>
+</head>
+<body>
+    <h1>Supabase Storage Bucket Checker</h1>
+    <button onclick="checkBucket()">Check if 'task-attachments' bucket exists</button>
+    <div id="result"></div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        
+        window.checkBucket = async function() {
+            const supabaseUrl = prompt("Enter your Supabase URL:");
+            const supabaseKey = prompt("Enter your Supabase Anon Key:");
+            
+            if (!supabaseUrl || !supabaseKey) {
+                alert("Please provide both URL and key");
+                return;
+            }
+            
+            const supabase = createClient(supabaseUrl, supabaseKey);
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Checking...</p>';
+            
+            try {
+                // List all buckets
+                const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+                
+                if (listError) {
+                    resultDiv.innerHTML = `<p style="color: red;">Error listing buckets: ${JSON.stringify(listError, null, 2)}</p>`;
+                    return;
+                }
+                
+                console.log("All buckets:", buckets);
+                const bucketExists = buckets?.some(b => b.id === 'task-attachments');
+                
+                if (bucketExists) {
+                    resultDiv.innerHTML = `
+                        <p style="color: green;">✅ Bucket 'task-attachments' EXISTS!</p>
+                        <p>Bucket details: ${JSON.stringify(buckets.find(b => b.id === 'task-attachments'), null, 2)}</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p style="color: red;">❌ Bucket 'task-attachments' DOES NOT EXIST!</p>
+                        <p>Available buckets: ${buckets?.map(b => b.id).join(', ') || 'None'}</p>
+                        <p>You need to run the migration to create the bucket.</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        };
+    </script>
+</body>
+</html>
+

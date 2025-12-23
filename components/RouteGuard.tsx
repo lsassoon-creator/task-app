@@ -18,13 +18,19 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
 
     const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
+    // If logged in and on public route, redirect to dashboard
     if (isLoggedIn && pathname === DEFAULT_PUBLIC_ROUTE) {
       router.replace(DEFAULT_AUTHENTICATED_ROUTE);
-    } else if (!isLoggedIn && !isPublicRoute) {
-      router.replace(DEFAULT_PUBLIC_ROUTE);
-    } else {
-      setIsReady(true);
+      return;
     }
+    
+    // If not logged in and not on public route, redirect to login
+    if (!isLoggedIn && !isPublicRoute) {
+      router.replace(DEFAULT_PUBLIC_ROUTE);
+      return;
+    }
+
+    setIsReady(true);
   }, [isLoggedIn, isLoading, pathname, router]);
 
   if (!isReady) return <LoadingSkeleton />;

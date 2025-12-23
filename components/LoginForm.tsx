@@ -27,12 +27,12 @@ const LoginForm = () => {
   return (
     <section aria-label={isSignUpMode ? "Sign Up Form" : "Login Form"}>
       <div className="max-w-md mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold mb-8 text-center text-foreground">
           {isSignUpMode ? "Create Account" : "Welcome Back"}
         </h1>
         <div className="space-y-4">
           <Button 
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full" 
+            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg" 
             onClick={handleGoogleLogin}
           >
             <LogIn className="mr-2 h-4 w-4" />
@@ -90,7 +90,7 @@ const LoginForm = () => {
             )}
             <Button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
+              className="w-full bg-yellow-500 hover:bg-yellow-600 text-black shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
             >
               <LogIn className="mr-2 h-4 w-4" />
               {isSignUpMode ? "Sign Up" : "Login"}
@@ -100,7 +100,7 @@ const LoginForm = () => {
             {isSignUpMode ? "Already have an account?" : "New account?"}{" "}
             <Link 
               href="#" 
-              className="underline font-semibold text-purple-600 hover:text-pink-600 transition-colors duration-300" 
+              className="underline font-semibold text-yellow-600 hover:text-yellow-700 transition-colors duration-300" 
               onClick={toggleMode}
             >
               {isSignUpMode ? "Login" : "Sign up"}

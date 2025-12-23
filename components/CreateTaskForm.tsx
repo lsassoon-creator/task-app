@@ -54,7 +54,7 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
       <Button 
         type="submit" 
         disabled={isSubmitting}
-        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
+        className="w-full bg-yellow-500 hover:bg-yellow-600 text-black shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
       >
         {isSubmitting ? "Creating..." : "Create Task"}
       </Button>
