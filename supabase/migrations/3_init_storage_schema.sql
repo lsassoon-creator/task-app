@@ -163,3 +163,4 @@ create trigger log_ai_suggestion_on_task_create
   execute function log_ai_label_suggestion();
 
 --migration update test
+--ai function added
