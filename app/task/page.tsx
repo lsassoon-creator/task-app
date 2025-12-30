@@ -250,9 +250,8 @@ function TaskForm() {
         Task Details
       </h1>
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Side - Other Details */}
-          <div className="lg:col-span-1 space-y-6">
+        <div className="max-w-2xl mx-auto">
+          <div className="space-y-6">
             {/* Title */}
             <div className="grid w-full items-center gap-2">
               <Label className="text-base font-semibold text-foreground">Title</Label>
@@ -261,6 +260,17 @@ function TaskForm() {
                 onChange={(e) => updateTask({ title: e.target.value })}
                 className="text-lg font-medium"
                 placeholder="Task title"
+              />
+            </div>
+
+            {/* Description */}
+            <div className="grid w-full items-start gap-2">
+              <Label className="text-base font-semibold text-foreground">Description</Label>
+              <Textarea
+                value={task.description || ""}
+                onChange={(e) => updateTask({ description: e.target.value })}
+                className="min-h-[200px] text-base leading-relaxed resize-none"
+                placeholder="Write your task description here..."
               />
             </div>
 
@@ -354,19 +364,6 @@ function TaskForm() {
                   Back to Dashboard
                 </Button>
               </Link>
-            </div>
-          </div>
-
-          {/* Right Side - Large Description */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="grid w-full items-start gap-2">
-              <Label className="text-lg font-semibold text-foreground">Description</Label>
-              <Textarea
-                value={task.description || ""}
-                onChange={(e) => updateTask({ description: e.target.value })}
-                className="min-h-[400px] text-lg leading-relaxed resize-none"
-                placeholder="Write your task description here..."
-              />
             </div>
           </div>
         </div>

@@ -253,7 +253,13 @@ export function useTaskManager(taskId?: string): UseTaskManagerReturn {
     }
   };
 
-  const createTask = async (title: string, description: string) => {
+  const createTask = async (
+    title: string,
+    description: string,
+    completed: boolean = false,
+    label: string | null = null,
+    due_date: Date | undefined = undefined
+  ) => {
     try {
       const {
         data: { session },
@@ -265,7 +271,13 @@ export function useTaskManager(taskId?: string): UseTaskManagerReturn {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session!.access_token}`,
         },
-        body: JSON.stringify({ title, description }),
+        body: JSON.stringify({
+          title,
+          description,
+          completed,
+          label,
+          due_date: due_date ? due_date.toISOString().split("T")[0] : null,
+        }),
       });
 
       if (!response.ok) {

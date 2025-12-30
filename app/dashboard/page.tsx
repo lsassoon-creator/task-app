@@ -20,10 +20,22 @@ export default function Dashboard() {
   const { createTask, refreshTasks, tasks, deleteTask, toggleTaskComplete } =
     useTaskManager();
 
-  const handleCreateTask = async (title: string, description: string) => {
-    await createTask(title, description);
+  const handleCreateTask = async (taskData: {
+    title: string;
+    description: string;
+    completed: boolean;
+    label: string | null;
+    due_date: Date | undefined;
+  }) => {
+    await createTask(
+      taskData.title,
+      taskData.description,
+      taskData.completed,
+      taskData.label,
+      taskData.due_date
+    );
     await refreshTasks();
-    console.log(`New Task Created: ${title}`);
+    console.log(`New Task Created: ${taskData.title}`);
     setIsDialogOpen(false);
   };
 
@@ -40,7 +52,7 @@ export default function Dashboard() {
               Create Task
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-2xl">
+          <DialogContent className="rounded-2xl max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-2xl text-foreground">
                 Create New Task

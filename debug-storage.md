@@ -26,3 +26,4 @@ This will show all storage policies. You should see policies for:
 - "Users can upload their own attachments" (INSERT)
 - "Users can delete their own attachments" (DELETE)
 
+
