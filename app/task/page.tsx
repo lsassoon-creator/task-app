@@ -27,6 +27,8 @@ import {
   ArrowLeft,
   Trash2,
   AlertOctagon,
+  Sparkles,
+  Loader2,
 } from "lucide-react";
 import { labels } from "@/lib/labels";
 import { format } from "date-fns";
@@ -58,6 +60,7 @@ function TaskForm() {
   const { session } = useAuth();
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
+  const [isImproving, setIsImproving] = useState(false);
 
   // Create supabase client once for URL generation
   const supabase = useMemo(() => {
@@ -157,6 +160,53 @@ function TaskForm() {
         description: error.message || "Failed to remove image",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleImproveDescription = async () => {
+    if (!task?.description?.trim()) {
+      toast({
+        title: "❌ No Description",
+        description: "Please enter a description first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsImproving(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/improve-description`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({ description: task.description }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to improve description");
+      }
+
+      const { improvedDescription } = await response.json();
+      updateTask({ description: improvedDescription });
+      toast({
+        title: "✅ Description Improved",
+        description: "AI has cleaned up and improved your description",
+      });
+    } catch (error: any) {
+      toast({
+        title: "❌ Improvement Failed",
+        description: error.message || "Failed to improve description",
+        variant: "destructive",
+      });
+    } finally {
+      setIsImproving(false);
     }
   };
 
@@ -269,12 +319,34 @@ function TaskForm() {
 
             {/* Description */}
             <div className="grid w-full items-start gap-2">
-              <Label className="text-base font-semibold text-foreground">Description</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-base font-semibold text-foreground">Description</Label>
+                <Button
+                  type="button"
+                  onClick={handleImproveDescription}
+                  disabled={isImproving || !task.description?.trim()}
+                  variant="outline"
+                  size="sm"
+                  className="text-purple-600 border-purple-300 hover:bg-purple-50 hover:border-purple-400"
+                >
+                  {isImproving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Improving...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      AI Improve
+                    </>
+                  )}
+                </Button>
+              </div>
               <Textarea
                 value={task.description || ""}
                 onChange={(e) => updateTask({ description: e.target.value })}
                 className="min-h-[200px] text-base leading-relaxed resize-none"
-                placeholder="Write your task description here..."
+                placeholder="Write your task description here... (Use 'AI Improve' to clean up messy text)"
               />
             </div>
 

@@ -44,6 +44,7 @@ Deno.serve(async (req) => {
 
     // Determine the label to use
     let finalLabel = label;
+    let isAiSuggested = false;
     
     // If no label provided, use AI to suggest one
     if (!finalLabel && OPENAI_API_KEY) {
@@ -71,6 +72,7 @@ Deno.serve(async (req) => {
       // Validate the label
       const validLabels = ["work", "personal", "priority", "shopping", "home"];
       finalLabel = validLabels.includes(suggestedLabel) ? suggestedLabel : null;
+      isAiSuggested = finalLabel !== null;
     }
 
     // Create the task with all fields
@@ -88,6 +90,26 @@ Deno.serve(async (req) => {
       .single();
 
     if (error) throw error;
+
+    // If AI suggested the label, log it to ai_label_suggestions table
+    if (isAiSuggested && data) {
+      try {
+        await supabaseClient
+          .from("ai_label_suggestions")
+          .insert({
+            task_id: data.task_id,
+            user_id: user.id,
+            original_title: title,
+            original_description: description || null,
+            suggested_label: finalLabel,
+            accepted: true,
+          });
+        console.log(`✅ Logged AI suggestion for task ${data.task_id}`);
+      } catch (suggestionError) {
+        // Don't fail the task creation if logging fails
+        console.error("Failed to log AI suggestion:", suggestionError);
+      }
+    }
 
     return new Response(JSON.stringify(data), {
       headers: {

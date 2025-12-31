@@ -17,11 +17,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Sparkles, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { labels } from "@/lib/labels";
 import { Task } from "@/types/models";
+import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/hooks/useAuth";
 
 interface CreateTaskFormProps {
   onSubmit: (taskData: {
@@ -41,6 +43,49 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isImproving, setIsImproving] = useState(false);
+  const { session } = useAuth();
+  
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  const handleImproveDescription = async () => {
+    if (!description.trim()) {
+      setError("Please enter a description first");
+      return;
+    }
+
+    setIsImproving(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/improve-description`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({ description }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to improve description");
+      }
+
+      const { improvedDescription } = await response.json();
+      setDescription(improvedDescription);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to improve description");
+    } finally {
+      setIsImproving(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,12 +129,34 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
 
           {/* Description */}
           <div className="grid w-full items-start gap-2">
-            <Label className="text-base font-semibold text-foreground">Description</Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-semibold text-foreground">Description</Label>
+              <Button
+                type="button"
+                onClick={handleImproveDescription}
+                disabled={isImproving || !description.trim()}
+                variant="outline"
+                size="sm"
+                className="text-purple-600 border-purple-300 hover:bg-purple-50 hover:border-purple-400"
+              >
+                {isImproving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Improving...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    AI Improve
+                  </>
+                )}
+              </Button>
+            </div>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="min-h-[200px] text-base leading-relaxed resize-none"
-              placeholder="Write your task description here..."
+              placeholder="Write your task description here... (Use 'AI Improve' to clean up messy text)"
             />
           </div>
 
