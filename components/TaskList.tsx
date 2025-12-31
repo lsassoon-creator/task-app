@@ -39,13 +39,18 @@ const TaskList = ({ tasks, onDelete, onToggleComplete }: TaskListProps) => {
         if (!error && data) {
           const suggestedIds = new Set(data.map(s => s.task_id));
           setAiSuggestedTaskIds(suggestedIds);
+        } else if (error) {
+          // Silently fail - table might not exist in some environments
+          console.log("AI suggestions not available:", error.message);
         }
       } catch (error) {
-        console.error("Error fetching AI suggestions:", error);
+        // Silently fail - table might not exist in some environments
+        console.log("AI suggestions not available");
       }
     };
 
     fetchAiSuggestions();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tasks]);
 
