@@ -19,7 +19,13 @@ export interface TasksState extends BaseState {
 }
 
 export interface TasksOperations {
-  createTask: (title: string, description: string) => Promise<Task>;
+  createTask: (
+    title: string,
+    description: string,
+    completed?: boolean,
+    label?: string | null,
+    due_date?: Date | undefined
+  ) => Promise<Task>;
   deleteTask: (taskId: string) => Promise<void>;
   toggleTaskComplete: (taskId: string, completed: boolean) => Promise<void>;
   refreshTasks: () => Promise<void>;
