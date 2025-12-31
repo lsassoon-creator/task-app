@@ -19,6 +19,11 @@ const TaskRow = ({ task, onDelete, onToggleComplete, isAiSuggested = false }: Ta
     return dateString.split("T")[0];
   };
 
+  // Debug logging
+  if (task.label && isAiSuggested) {
+    console.log(`✨ Task ${task.task_id} has AI-suggested label: ${task.label}`);
+  }
+
   return (
     <TableRow className="hover:bg-yellow-50/50 transition-all duration-300 border-b border-gray-200">
       <TableCell className="py-4">

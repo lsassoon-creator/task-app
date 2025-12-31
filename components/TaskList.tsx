@@ -31,21 +31,24 @@ const TaskList = ({ tasks, onDelete, onToggleComplete }: TaskListProps) => {
       
       try {
         const taskIds = tasks.map(t => t.task_id);
+        console.log("🔍 Fetching AI suggestions for tasks:", taskIds);
+        
         const { data, error } = await supabase
           .from("ai_label_suggestions")
           .select("task_id")
           .in("task_id", taskIds);
 
         if (!error && data) {
+          console.log("✅ AI suggestions found:", data);
           const suggestedIds = new Set(data.map(s => s.task_id));
+          console.log("✨ Tasks with AI suggestions:", Array.from(suggestedIds));
           setAiSuggestedTaskIds(suggestedIds);
         } else if (error) {
-          // Silently fail - table might not exist in some environments
-          console.log("AI suggestions not available:", error.message);
+          console.error("❌ Error fetching AI suggestions:", error);
+          console.error("Error details:", error.message, error.code);
         }
       } catch (error) {
-        // Silently fail - table might not exist in some environments
-        console.log("AI suggestions not available");
+        console.error("❌ Exception fetching AI suggestions:", error);
       }
     };
 
