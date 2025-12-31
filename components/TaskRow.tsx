@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Sparkles } from "lucide-react";
 import { getLabelColors, getLabelDisplayName } from "@/lib/labels";
 import { Task } from "@/types/models";
 
@@ -11,9 +11,10 @@ interface TaskRowProps {
   task: Task;
   onDelete: (taskId: string) => void;
   onToggleComplete: (taskId: string, completed: boolean) => void;
+  isAiSuggested?: boolean;
 }
 
-const TaskRow = ({ task, onDelete, onToggleComplete }: TaskRowProps) => {
+const TaskRow = ({ task, onDelete, onToggleComplete, isAiSuggested = false }: TaskRowProps) => {
   const formatDate = (dateString: string) => {
     return dateString.split("T")[0];
   };
@@ -43,17 +44,24 @@ const TaskRow = ({ task, onDelete, onToggleComplete }: TaskRowProps) => {
       </TableCell>
       <TableCell className="py-4">
         {task.label && (
-          <Badge
-            variant="outline"
-            className={[
-              getLabelColors(task.label)["bg-color"],
-              getLabelColors(task.label)["text-color"],
-              getLabelColors(task.label)["border-color"],
-              "rounded-full px-3 py-1 font-semibold border-2",
-            ].join(" ")}
-          >
-            {getLabelDisplayName(task.label)}
-          </Badge>
+          <div className="flex items-center gap-1.5">
+            <Badge
+              variant="outline"
+              className={[
+                getLabelColors(task.label)["bg-color"],
+                getLabelColors(task.label)["text-color"],
+                getLabelColors(task.label)["border-color"],
+                "rounded-full px-3 py-1 font-semibold border-2",
+              ].join(" ")}
+            >
+              {getLabelDisplayName(task.label)}
+            </Badge>
+            {isAiSuggested && (
+              <span className="inline-flex items-center" title="AI Suggested">
+                <Sparkles className="h-4 w-4 text-purple-500" aria-label="AI Suggested" />
+              </span>
+            )}
+          </div>
         )}
       </TableCell>
       <TableCell className="py-4 whitespace-nowrap text-muted-foreground font-medium">

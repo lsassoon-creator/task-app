@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -7,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import TaskRow from "./TaskRow";
 import { Task } from "@/types/models";
+import { createBrowserClient } from "@supabase/ssr";
 
 interface TaskListProps {
   tasks: Task[];
@@ -15,6 +19,36 @@ interface TaskListProps {
 }
 
 const TaskList = ({ tasks, onDelete, onToggleComplete }: TaskListProps) => {
+  const [aiSuggestedTaskIds, setAiSuggestedTaskIds] = useState<Set<string>>(new Set());
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  useEffect(() => {
+    const fetchAiSuggestions = async () => {
+      if (tasks.length === 0) return;
+      
+      try {
+        const taskIds = tasks.map(t => t.task_id);
+        const { data, error } = await supabase
+          .from("ai_label_suggestions")
+          .select("task_id")
+          .in("task_id", taskIds);
+
+        if (!error && data) {
+          const suggestedIds = new Set(data.map(s => s.task_id));
+          setAiSuggestedTaskIds(suggestedIds);
+        }
+      } catch (error) {
+        console.error("Error fetching AI suggestions:", error);
+      }
+    };
+
+    fetchAiSuggestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tasks]);
+
   return (
     <Table>
       <TableHeader>
@@ -33,6 +67,7 @@ const TaskList = ({ tasks, onDelete, onToggleComplete }: TaskListProps) => {
             task={task}
             onDelete={onDelete}
             onToggleComplete={onToggleComplete}
+            isAiSuggested={aiSuggestedTaskIds.has(task.task_id)}
           />
         ))}
       </TableBody>
