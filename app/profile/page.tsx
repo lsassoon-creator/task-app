@@ -38,6 +38,7 @@ export default function Profile() {
       if (!user) return;
       
       try {
+        console.log("🔍 Fetching AI suggestions for user:", user.user_id);
         const { data, error } = await supabase
           .from("ai_label_suggestions")
           .select("*")
@@ -46,19 +47,25 @@ export default function Profile() {
           .limit(10);
 
         if (error) {
-          console.error("Error fetching AI suggestions:", error);
+          console.error("❌ Error fetching AI suggestions:", error);
+          console.error("Error code:", error.code);
+          console.error("Error message:", error.message);
           // Check if table doesn't exist (common error code: 42P01)
-          if (error.code === "42P01" || error.message?.includes("does not exist")) {
-            setSuggestionsError("AI tracking table not found. Please apply database migration.");
+          if (error.code === "42P01" || error.message?.includes("does not exist") || error.message?.includes("relation") || error.message?.includes("permission denied")) {
+            setSuggestionsError("AI tracking table not found. Please apply database migration in Supabase SQL Editor.");
           } else {
-            setSuggestionsError("Failed to load AI suggestions.");
+            setSuggestionsError(`Failed to load AI suggestions: ${error.message}`);
           }
-          throw error;
+          setAiSuggestions([]);
+        } else {
+          console.log("✅ AI suggestions fetched:", data?.length || 0);
+          setAiSuggestions(data || []);
+          setSuggestionsError(null);
         }
-        setAiSuggestions(data || []);
-        setSuggestionsError(null);
-      } catch (error) {
-        console.error("Error fetching AI suggestions:", error);
+      } catch (error: any) {
+        console.error("❌ Exception fetching AI suggestions:", error);
+        setSuggestionsError(`Error: ${error?.message || "Unknown error"}`);
+        setAiSuggestions([]);
       } finally {
         setLoadingSuggestions(false);
       }
