@@ -110,12 +110,25 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
             <Label className="text-base font-semibold text-foreground">Label</Label>
             <Select
               value={label || ""}
-              onValueChange={(value) => setLabel(value as Task["label"])}
+              onValueChange={(value) => {
+                if (value === "ai-suggest") {
+                  // Set to null so AI will suggest
+                  setLabel(null);
+                } else {
+                  setLabel(value as Task["label"]);
+                }
+              }}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a label" />
+                <SelectValue placeholder="Select a label or let AI suggest" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="ai-suggest" className="font-semibold text-purple-600">
+                  ✨ Let AI Suggest
+                </SelectItem>
+                <SelectItem value="" className="text-muted-foreground">
+                  No Label
+                </SelectItem>
                 {labels.map((labelOption) => (
                   <SelectItem key={labelOption.value} value={labelOption.value}>
                     {labelOption.label}
@@ -123,6 +136,11 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
                 ))}
               </SelectContent>
             </Select>
+            {label === null && (
+              <p className="text-sm text-purple-600 font-medium">
+                ✨ AI will automatically suggest a label based on your task
+              </p>
+            )}
           </div>
 
           {/* Due Date */}
