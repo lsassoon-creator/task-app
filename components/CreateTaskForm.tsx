@@ -138,7 +138,7 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
             </Select>
             {label === null && (
               <p className="text-sm text-purple-600 font-medium mt-1">
-                ✨ AI will automatically suggest a label based on your task
+                ✨ AI will automatically suggest a label based on your task content
               </p>
             )}
           </div>
