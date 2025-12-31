@@ -46,3 +46,9 @@ export const getLabelColors = (label: string) => {
     "border-color": labelObj?.["border-color"] || "border-gray-500",
   };
 };
+
+export const getLabelDisplayName = (labelValue: string | null): string => {
+  if (!labelValue) return "";
+  const labelObj = labels.find((l) => l.value === labelValue);
+  return labelObj?.label || labelValue;
+};

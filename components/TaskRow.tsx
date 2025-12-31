@@ -4,7 +4,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Edit, Trash2 } from "lucide-react";
-import { getLabelColors } from "@/lib/labels";
+import { getLabelColors, getLabelDisplayName } from "@/lib/labels";
 import { Task } from "@/types/models";
 
 interface TaskRowProps {
@@ -52,7 +52,7 @@ const TaskRow = ({ task, onDelete, onToggleComplete }: TaskRowProps) => {
               "rounded-full px-3 py-1 font-semibold border-2",
             ].join(" ")}
           >
-            {task.label}
+            {getLabelDisplayName(task.label)}
           </Badge>
         )}
       </TableCell>
