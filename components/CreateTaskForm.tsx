@@ -176,10 +176,10 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
           <div className="grid w-full items-center gap-2">
             <Label className="text-base font-semibold text-foreground">Label</Label>
             <Select
-              value={label || ""}
+              value={label || "none"}
               onValueChange={(value) => {
-                if (value === "ai-suggest") {
-                  // Set to null so AI will suggest
+                if (value === "ai-suggest" || value === "none") {
+                  // Set to null so AI will suggest or no label
                   setLabel(null);
                 } else {
                   setLabel(value as Task["label"]);
@@ -193,7 +193,7 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
                 <SelectItem value="ai-suggest" className="font-semibold text-purple-600">
                   ✨ Let AI Suggest
                 </SelectItem>
-                <SelectItem value="" className="text-muted-foreground">
+                <SelectItem value="none" className="text-muted-foreground">
                   No Label
                 </SelectItem>
                 {labels.map((labelOption) => (
