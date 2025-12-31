@@ -46,21 +46,17 @@ const TaskList = ({ tasks, onDelete, onToggleComplete }: TaskListProps) => {
         } else if (error) {
           console.error("❌ Error fetching AI suggestions:", error);
           console.error("Error details:", error.message, error.code);
-          // If table doesn't exist, show all labels with sparkle as fallback
-          // This is a temporary workaround
-          const tasksWithLabels = tasks.filter(t => t.label).map(t => t.task_id);
-          setAiSuggestedTaskIds(new Set(tasksWithLabels));
+          // Don't show sparkles if there's an error - only show for actual AI suggestions
+          setAiSuggestedTaskIds(new Set());
         } else {
-          // No AI suggestions found - show sparkle for tasks with labels as fallback
-          // This helps users see the feature is working
-          const tasksWithLabels = tasks.filter(t => t.label).map(t => t.task_id);
-          setAiSuggestedTaskIds(new Set(tasksWithLabels));
+          // No AI suggestions found in database
+          console.log("ℹ️ No AI suggestions found in database");
+          setAiSuggestedTaskIds(new Set());
         }
       } catch (error) {
         console.error("❌ Exception fetching AI suggestions:", error);
-        // Fallback: show sparkle for all tasks with labels
-        const tasksWithLabels = tasks.filter(t => t.label).map(t => t.task_id);
-        setAiSuggestedTaskIds(new Set(tasksWithLabels));
+        // Don't show sparkles on error - only show for actual AI suggestions
+        setAiSuggestedTaskIds(new Set());
       }
     };
 

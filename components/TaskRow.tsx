@@ -62,8 +62,14 @@ const TaskRow = ({ task, onDelete, onToggleComplete, isAiSuggested = false }: Ta
               {getLabelDisplayName(task.label)}
             </Badge>
             {isAiSuggested && (
-              <span className="inline-flex items-center" title="AI Suggested">
-                <Sparkles className="h-4 w-4 text-purple-500" aria-label="AI Suggested" />
+              <span 
+                className="inline-flex items-center cursor-help group" 
+                title="✨ AI Suggested Label - This label was automatically suggested by AI"
+              >
+                <Sparkles 
+                  className="h-4 w-4 text-purple-500 hover:text-purple-600 transition-colors" 
+                  aria-label="AI Suggested Label"
+                />
               </span>
             )}
           </div>
