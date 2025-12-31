@@ -98,7 +98,6 @@ function TaskForm() {
       console.error("Error keys:", Object.keys(error || {}));
       console.error("Full error object:", JSON.stringify(error, null, 2));
       console.error("Error message:", error?.message);
-      console.error("Error statusCode:", error?.statusCode);
       console.error("Error error:", error?.error);
       console.error("Error name:", error?.name);
       console.error("Error stack:", error?.stack);

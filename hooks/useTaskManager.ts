@@ -170,8 +170,6 @@ export function useTaskManager(taskId?: string): UseTaskManagerReturn {
       if (uploadError) {
         console.error("❌ Upload error details:", {
           message: uploadError.message,
-          statusCode: uploadError.statusCode,
-          error: uploadError.error,
           name: uploadError.name
         });
         throw uploadError;
@@ -197,7 +195,6 @@ export function useTaskManager(taskId?: string): UseTaskManagerReturn {
     } catch (error: any) {
       console.error("❌ Error uploading image - Full error object:", error);
       console.error("Error message:", error?.message);
-      console.error("Error statusCode:", error?.statusCode);
       console.error("Error error:", error?.error);
       console.error("Error name:", error?.name);
       console.error("Error stack:", error?.stack);
