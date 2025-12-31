@@ -26,6 +26,7 @@ export default function Profile() {
   const { manageSubscription } = useSubscription();
   const [aiSuggestions, setAiSuggestions] = useState<AILabelSuggestion[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
+  const [suggestionsError, setSuggestionsError] = useState<string | null>(null);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -44,8 +45,18 @@ export default function Profile() {
           .order("created_at", { ascending: false })
           .limit(10);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Error fetching AI suggestions:", error);
+          // Check if table doesn't exist (common error code: 42P01)
+          if (error.code === "42P01" || error.message?.includes("does not exist")) {
+            setSuggestionsError("AI tracking table not found. Please apply database migration.");
+          } else {
+            setSuggestionsError("Failed to load AI suggestions.");
+          }
+          throw error;
+        }
         setAiSuggestions(data || []);
+        setSuggestionsError(null);
       } catch (error) {
         console.error("Error fetching AI suggestions:", error);
       } finally {
@@ -109,6 +120,10 @@ export default function Profile() {
         <CardContent className="space-y-4 text-sm">
           {loadingSuggestions ? (
             <p className="text-muted-foreground">Loading AI suggestions...</p>
+          ) : suggestionsError ? (
+            <p className="text-red-600 text-sm">
+              {suggestionsError}
+            </p>
           ) : aiSuggestions.length === 0 ? (
             <p className="text-muted-foreground">
               No AI label suggestions yet. Create tasks with labels to see them here!

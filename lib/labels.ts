@@ -23,9 +23,9 @@ export const labels = [
   {
     value: "home",
     label: "Home",
-    "bg-color": "bg-purple-100",
-    "text-color": "text-purple-800",
-    "border-color": "border-purple-300",
+    "bg-color": "bg-yellow-100",
+    "text-color": "text-yellow-800",
+    "border-color": "border-yellow-300",
   },
   {
     value: "priority",
