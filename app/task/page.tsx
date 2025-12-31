@@ -166,10 +166,15 @@ function TaskForm() {
     console.log("Task image_url:", task!.image_url);
     console.log("Supabase client:", supabase ? "exists" : "missing");
     
+    // Check if image_url exists before calling getPublicUrl
+    if (!task?.image_url) {
+      return null;
+    }
+    
     // Use Supabase's getPublicUrl method for proper URL construction
     const { data: urlData } = supabase.storage
       .from("task-attachments")
-      .getPublicUrl(task!.image_url);
+      .getPublicUrl(task.image_url);
     
     console.log("URL data from getPublicUrl:", urlData);
     console.log("Final image URL:", urlData.publicUrl);
